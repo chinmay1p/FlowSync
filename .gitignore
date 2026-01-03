@@ -69,3 +69,27 @@ node_modules/
 .dataconnect
 .venv
 .env
+.firebaserc
+firebase_setup.md
+firebase_service_account.json
+firebase.json
+
+# Node
+node_modules/
+dist/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Env files
+.env
+.env.local
+
+# Firebase
+.firebase/
+.firebaserc
+
+# OS
+.DS_Store
