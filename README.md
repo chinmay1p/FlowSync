@@ -44,8 +44,6 @@ Our platform solves this by **connecting meetings, tasks, and collaboration tool
   - Priorities & deadlines
   - GitHub issue links
 
-All dashboards are **modular**, not a single-page blob.
-
 ---
 
 ### ✅ Task Management System
@@ -65,18 +63,16 @@ All dashboards are **modular**, not a single-page blob.
 ### 🗓️ Calendar View
 - Tasks visualized in a **calendar layout**
 - Helps teams plan work around deadlines
-- Future-ready for Google Calendar sync
 
 ---
 
 ### 🔌 Slack Integration
 - Assign tasks directly from Slack using a slash command:
-# 🚀 Meeting Intelligence Platform  
-### Team: Travelling Salesmen
-
-An all-in-one **project management, task management, and meeting intelligence platform** that connects **Slack, GitHub, dashboards, and Google Meet** to ensure that **no action item is ever lost**.
-
-Built for **GDG Hackathon**, with a strong focus on **real integrations**, **role-based workflows**, and **practical AI assistance**.
+- Slack command: /assign email@example.com Task description priority=high
+- Instantly acknowledges request (no timeout)
+- Creates task asynchronously
+- Optionally creates a GitHub issue
+- Slack user email is mapped to platform user automatically
 
 ---
 
