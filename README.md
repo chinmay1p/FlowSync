@@ -1,81 +1,172 @@
-# Meeting Intelligence Platform Architecture Plan
+# 🚀 FlowSync
+### Team: Travelling Salesmen
 
-## Surfaces
-- Web application (React + Vite, Tailwind CSS, Firebase Auth/Firestore, WebSocket client).
-- Chrome extension (Manifest v3, Meet DOM content scripts, background service worker, Firebase Auth, WebSocket client).
+An all-in-one **project management, task management, and meeting intelligence platform** that connects **Slack, GitHub, dashboards, and Google Meet** to ensure that **no action item is ever lost**.
 
-## Backend & Services
-- FastAPI backend with WebSocket server, Firebase Admin SDK.
-- Deepgram streaming STT for low-latency PCM transcripts (interim + final).
-- Gemini for action-item extraction, reasoning, task inference, meeting Q&A.
-- Integrations: GitHub API, Slack API, Google Calendar API.
+---
 
-## Authentication & Identity
-- Firebase Auth only; users identified by Firebase UID + verified email.
-- No local/static users; backend re-verifies roles/org context on each request.
+## 📌 Problem Statement
 
-## Organization & Team Model
-- Users must belong to an organization (collections: organizations, org_members).
-- Org creation assigns ORG_ADMIN; join via six-digit joinCode.
-- Organizations contain teams (collections: teams, team_members).
-- Team roles: MANAGER or EMPLOYEE (mutually exclusive per team, but user can join multiple teams with different roles).
+In most teams today:
+- Tasks discussed in meetings are forgotten
+- Action items are scattered across Slack, GitHub, and calendars
+- Managers manually translate conversations into work
+- Employees lack clarity on priorities and deadlines
 
-## Website Responsibilities
-- Org creation/join, team management, role assignment.
-- Role-based dashboards (Admin, Manager, Employee).
-- Task management UI and integration setup.
-- Historical data review.
+Our platform solves this by **connecting meetings, tasks, and collaboration tools into a single workflow**.
 
-## Chrome Extension Responsibilities
-- Detect Google Meet sessions.
-- Capture tab audio (with consent) and stream PCM to backend via WebSocket.
-- Read live captions + speaker labels from DOM.
-- Display live transcript, AI insights, in-meeting chatbot.
+---
 
-## Meeting Flow
-1. Extension detects Meet and user starts capture.
-2. Tab audio streamed through WebSocket to backend.
-3. Backend forwards audio to Deepgram; receives interim/final transcripts.
-4. Only final transcripts enter per-meeting sliding-window buffer (30�60s, clean sentences).
-5. Gemini runs on buffered transcripts for action items / reasoning.
+## ✨ Key Features
 
-## Task System
-- Gemini suggestions require MANAGER approval before becoming tasks.
-- Task types: GitHub issues (after approval) and internal dashboard/calendar tasks.
-- Employees receive/execute tasks; managers approve/edit/reject.
+### 🏢 Organization & Team Management
+- Create or join organizations using a **6-digit join code**
+- Role-based access:
+  - **Admin**
+  - **Manager**
+  - **Employee**
+- Team creation and member assignment using **real email IDs**
+- One user can belong to multiple teams with different roles
 
-## Integrations
-- GitHub: issues created post-approval, mirrored in dashboard.
-- Slack: slash commands (e.g., /assign), notifications, task creation pipeline.
-- Google Calendar: sync deadlines and reminders.
+---
 
-## Security & Constraints
-- No static data; everything validated server-side.
-- Firebase Security Rules enforced; backend double-checks org/team roles.
-- Gemini never auto-acts humans approve tasks.
-- System must remain modular, scalable, deployable, hackathon-ready, and aligned with production best practices.
+### 📊 Role-Based Dashboards
+- **Admin Dashboard**
+  - Org overview
+  - Teams & members
+  - All tasks visibility
+- **Manager Dashboard**
+  - Task assignment
+  - Approval control
+  - Slack & GitHub integrations
+- **Employee Dashboard**
+  - Assigned tasks
+  - Priorities & deadlines
+  - GitHub issue links
 
-## Org Flow Setup
-- Backend
-	- Provide `FIREBASE_SERVICE_ACCOUNT_PATH` env var that points to a Firebase Admin service-account JSON with Firestore access.
-	- Enable Firestore in Native mode; the `organizations` and `org_members` collections are created automatically by the new endpoints (no composite indexes needed yet).
-	- Deploy FastAPI so that `/org/create` and `/org/join` are reachable at the base URL you expose to the frontend.
-- Frontend
-	- Set `VITE_API_BASE_URL` to the FastAPI deployment origin (e.g., `http://localhost:9000`).
-	- Run `npm install` to ensure `react-router-dom` is available for the new organization pages.
-	- Users must sign in through Firebase Auth before creating or joining an organization; make sure the providers you need (e.g., Google) stay enabled in the Firebase console.
+All dashboards are **modular**, not a single-page blob.
 
-## User Context API
-- Endpoint: `GET /me/context`
-- Requires Firebase ID token; backend verifies and resolves:
-	- Organization membership (ID + role: `ORG_ADMIN` or `MEMBER`).
-	- Organization metadata (name, description, join code exposed only to admins).
-	- Team memberships with per-team roles plus resolved teammates.
-	- Organization roster (admins only) and full team directory for dashboards.
-- Frontend uses this single payload to render all dashboards; no role inference happens client-side beyond choosing the correct route from the returned context.
+---
 
-## Dashboards
-- `/dashboard/admin`: Organization overview (name, join code, team list, roster, links to management/settings placeholders).
-- `/dashboard/manager`: Highlights teams the user manages plus placeholder tiles for tasks and meetings.
-- `/dashboard/employee`: Personal view with membership list and placeholders for tasks/calendar integrations.
-- `/dashboard`: Smart redirect that loads context then routes to the correct dashboard (`ORG_ADMIN` → admin, managers → manager, everyone else → employee).
+### ✅ Task Management System
+- Tasks have:
+  - Title
+  - Priority
+  - Status
+  - Assignee
+  - Optional GitHub issue link
+- Two task types:
+  1. **GitHub Tasks** (create GitHub issues)
+  2. **Internal Tasks** (dashboard + calendar only)
+- Managers approve tasks before execution
+
+---
+
+### 🗓️ Calendar View
+- Tasks visualized in a **calendar layout**
+- Helps teams plan work around deadlines
+- Future-ready for Google Calendar sync
+
+---
+
+### 🔌 Slack Integration
+- Assign tasks directly from Slack using a slash command:
+# 🚀 Meeting Intelligence Platform  
+### Team: Travelling Salesmen
+
+An all-in-one **project management, task management, and meeting intelligence platform** that connects **Slack, GitHub, dashboards, and Google Meet** to ensure that **no action item is ever lost**.
+
+Built for **GDG Hackathon**, with a strong focus on **real integrations**, **role-based workflows**, and **practical AI assistance**.
+
+---
+
+### 🧑‍💻 GitHub Integration
+- Managers link a GitHub repository at project level
+- Approved tasks can:
+- Create GitHub issues
+- Sync issue URL back to dashboard
+- Real GitHub API integration using secure tokens
+
+---
+
+### 🎙️ Google Meet Integration (Meeting Intelligence)
+- Chrome Extension detects active Google Meet sessions
+- Meeting session token connects extension to backend
+- Audio capture pipeline (tab audio)
+- Task detection engine triggers **action item popups**
+- Manager approves detected tasks
+- Approved tasks sync to:
+- Dashboard
+- GitHub
+- Slack
+
+---
+
+## 🧠 AI Capabilities
+- Action item detection (meeting intelligence)
+- Task reasoning and prioritization
+- Designed for Gemini-powered reasoning (lazy-loaded for stability)
+- AI decisions are **never auto-executed** — always manager-approved
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **React + Vite**
+- **Tailwind CSS**
+- Firebase Authentication
+- WebSocket client for real-time updates
+
+### Backend
+- **FastAPI (Python)**
+- Firebase Admin SDK
+- Firestore (primary database)
+- WebSockets
+- Background task processing
+- Slack API
+- GitHub API
+
+### Chrome Extension
+- Manifest V3
+- Google Meet DOM integration
+- Firebase Auth
+- WebSocket communication
+
+---
+
+## ☁️ Google Technologies Used
+
+- **Firebase Authentication**  
+Secure login using real Google accounts
+
+- **Firebase Firestore**  
+Single source of truth for orgs, teams, users, and tasks
+
+- **Firebase Admin SDK**  
+Server-side verification and access control
+
+- **Google Meet (via Chrome Extension)**  
+Live meeting detection and interaction
+
+- **Gemini (planned / integrated)**  
+Task reasoning and meeting intelligence
+
+---
+
+## 🔐 Security & Design Principles
+- No static users or mock data
+- All users authenticated via Firebase
+- Backend re-validates:
+- Org membership
+- Team role
+- Permissions
+- Slack requests verified using signing secret
+- No trust in frontend for access control
+- AI never auto-executes actions
+
+---
+
+
+
+
