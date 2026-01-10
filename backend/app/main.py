@@ -18,8 +18,12 @@ from app.api import (
 	teams,
 	extension as extension_routes,
 	meeting as meeting_routes,
+	meetings as meetings_routes,
 	slack as slack_routes,
 	tasks as tasks_routes,
+	zoom as zoom_routes,
+	zoom_sdk as zoom_sdk_routes,
+	zoom_webhook as zoom_webhook_routes,
 )
 
 # Configure logging
@@ -51,15 +55,26 @@ app = FastAPI(
 )
 
 # Enable CORS for frontend
-settings = get_settings()
+# settings = get_settings()
+# app.add_middleware(
+# 	CORSMiddleware,
+# 	allow_origins=settings.cors_allow_origins,
+# 	allow_origin_regex=settings.cors_allow_origin_regex,
+# 	allow_credentials=True,
+# 	allow_methods=['*'],
+# 	allow_headers=['*'],
+# )
 app.add_middleware(
-	CORSMiddleware,
-	allow_origins=settings.cors_allow_origins,
-	allow_origin_regex=settings.cors_allow_origin_regex,
-	allow_credentials=True,
-	allow_methods=['*'],
-	allow_headers=['*'],
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
 
 # Include routers
 app.include_router(auth.router)
@@ -69,8 +84,12 @@ app.include_router(me.router)
 app.include_router(websocket_routes.router)
 app.include_router(extension_routes.router)
 app.include_router(meeting_routes.router)
+app.include_router(meetings_routes.router)
 app.include_router(tasks_routes.router)
 app.include_router(slack_routes.router)
+app.include_router(zoom_routes.router)
+app.include_router(zoom_sdk_routes.router)
+app.include_router(zoom_webhook_routes.router)
 
 
 @app.get('/health')

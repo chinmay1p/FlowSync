@@ -5,6 +5,7 @@ import {
 	signOutUser,
 	signUpWithEmail,
 	updateDisplayName,
+	checkRedirectResult,
 } from '../services/auth'
 
 const formatUser = (payload) => ({
@@ -19,18 +20,53 @@ const useAuthStore = create((set, get) => ({
 	idToken: null,
 	loading: false,
 	error: null,
+	setFromFirebase: ({ uid, email, displayName, photoURL, idToken }) => {
+		set({
+			user: formatUser({ uid, email, name: displayName, picture: photoURL }),
+			idToken,
+			loading: false,
+			error: null,
+		})
+	},
+	// Check for redirect result (called on app init)
+	checkRedirectAuth: async () => {
+		try {
+			const userData = await checkRedirectResult()
+			if (userData) {
+				set({
+					user: formatUser(userData),
+					idToken: userData.idToken,
+					loading: false,
+					error: null,
+				})
+				return true
+			}
+			return false
+		} catch (err) {
+			console.error('Redirect auth check failed:', err)
+			return false
+		}
+	},
 	loginWithGoogle: async () => {
 		if (get().loading) return
 		set({ loading: true, error: null })
 		try {
 			const userData = await signInWithGoogle()
-			set({
-				user: formatUser(userData),
-				idToken: userData.idToken,
-				loading: false,
-				error: null,
-			})
+			// userData will be null if redirecting
+			if (userData) {
+				set({
+					user: formatUser(userData),
+					idToken: userData.idToken,
+					loading: false,
+					error: null,
+				})
+			}
 		} catch (err) {
+			// Handle popup interruptions gracefully; redirect fallback is already triggered in the service
+			if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/popup-blocked') {
+				set({ error: null, loading: false })
+				return
+			}
 			set({ error: err.message || 'Login failed', loading: false })
 		}
 	},

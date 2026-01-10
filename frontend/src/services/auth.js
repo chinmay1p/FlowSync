@@ -3,12 +3,35 @@ import {
 	GoogleAuthProvider,
 	signInWithEmailAndPassword,
 	signInWithPopup,
+	signInWithRedirect,
+	getRedirectResult,
 	signOut,
 	updateProfile,
 } from 'firebase/auth'
 import { auth } from '../config/firebase'
 
 const googleProvider = new GoogleAuthProvider()
+
+// Check for redirect result on page load
+export const checkRedirectResult = async () => {
+	try {
+		const result = await getRedirectResult(auth)
+		if (result) {
+			const idToken = await result.user.getIdToken()
+			return {
+				uid: result.user.uid,
+				email: result.user.email,
+				name: result.user.displayName,
+				picture: result.user.photoURL,
+				idToken,
+			}
+		}
+		return null
+	} catch (error) {
+		console.error('Redirect result error:', error)
+		return null
+	}
+}
 
 export const signInWithGoogle = async () => {
 	try {
@@ -22,7 +45,17 @@ export const signInWithGoogle = async () => {
 			idToken,
 		}
 	} catch (error) {
-		throw new Error(error.message || 'Sign-in failed')
+		// Downgrade noisy popup errors and fall back to redirect
+		if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/popup-blocked') {
+			console.info('Popup sign-in interrupted; falling back to redirect flow.')
+			await signInWithRedirect(auth, googleProvider)
+			return null
+		}
+
+		console.error('Google sign-in error:', error.code, error.message)
+		const err = new Error(error.message || 'Sign-in failed')
+		err.code = error.code
+		throw err
 	}
 }
 
