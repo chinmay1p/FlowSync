@@ -34,12 +34,6 @@ function App() {
 	const setFromFirebase = useAuthStore((state) => state.setFromFirebase)
 
 	useEffect(() => {
-		// Check for redirect auth result (Google sign-in flow)
-		import('./store/authStore').then((module) => {
-			const store = module.default.getState()
-			store.checkRedirectAuth()
-		})
-
 		const auth = getAuth()
 		const unsubscribe = auth.onAuthStateChanged(async (user) => {
 			if (user) {
