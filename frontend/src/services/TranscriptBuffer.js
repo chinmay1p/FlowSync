@@ -8,22 +8,22 @@ const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 // Minimum time between Gemini calls (15 seconds for testing)
-const MIN_CALL_INTERVAL_MS = 15 * 1000;
+const MIN_CALL_INTERVAL_MS = 20 * 1000;
 
 // ============================================
 // REGEX PATTERNS FOR INTENT DETECTION
 // ============================================
 
-// Simple action verbs (relaxed for testing)
+// Simple action verbs
 const ACTION_VERBS = /\b(need|should|will|must|please|let's|can|could|do|make|send|check|update|review|call|email|work|task|handle|finish|complete)\b/i;
 
-// Simple responsibility/assignment (relaxed for testing)
+// Simple responsibility/assignment 
 const RESPONSIBILITY_PHRASES = /\b(you|your|I'll|I will|we|someone|team|@\w+)\b/i;
 
-// Time words (relaxed for testing)
+// Time words
 const TIME_URGENCY = /\b(today|tomorrow|monday|tuesday|wednesday|thursday|friday|soon|asap|urgent|deadline|week|day|morning|afternoon|evening)\b/i;
 
-// Strong patterns (relaxed for testing)
+// Strong patterns 
 const STRONG_ACTION_PATTERNS = /\b(action|todo|task|follow.?up|next step|milestone|deliverable|homework|meeting|project)\b/i;
 
 // ============================================

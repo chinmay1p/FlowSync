@@ -5,6 +5,7 @@ import {
 	signOutUser,
 	signUpWithEmail,
 	updateDisplayName,
+	subscribeToAuthChanges,
 	checkRedirectResult,
 } from '../services/auth'
 
@@ -18,17 +19,36 @@ const formatUser = (payload) => ({
 const useAuthStore = create((set, get) => ({
 	user: null,
 	idToken: null,
-	loading: false,
+	loading: true, // IMPORTANT: wait for Firebase on app load
 	error: null,
-	setFromFirebase: ({ uid, email, displayName, photoURL, idToken }) => {
-		set({
-			user: formatUser({ uid, email, name: displayName, picture: photoURL }),
-			idToken,
-			loading: false,
-			error: null,
+
+	/* -------------------------------
+	   FIREBASE AUTH STATE SYNC
+	-------------------------------- */
+	initializeSubscription: () => {
+		const unsubscribe = subscribeToAuthChanges((userData) => {
+			if (userData) {
+				set({
+					user: formatUser(userData),
+					idToken: userData.idToken,
+					loading: false,
+					error: null,
+				})
+			} else {
+				set({
+					user: null,
+					idToken: null,
+					loading: false,
+					error: null,
+				})
+			}
 		})
+		return unsubscribe
 	},
-	// Check for redirect result (called on app init)
+
+	/* -------------------------------
+	   REDIRECT AUTH (GOOGLE)
+	-------------------------------- */
 	checkRedirectAuth: async () => {
 		try {
 			const userData = await checkRedirectResult()
@@ -47,12 +67,18 @@ const useAuthStore = create((set, get) => ({
 			return false
 		}
 	},
+
+	/* -------------------------------
+	   LOGIN METHODS
+	-------------------------------- */
 	loginWithGoogle: async () => {
 		if (get().loading) return
 		set({ loading: true, error: null })
+
 		try {
 			const userData = await signInWithGoogle()
-			// userData will be null if redirecting
+
+			// If popup flow succeeded immediately
 			if (userData) {
 				set({
 					user: formatUser(userData),
@@ -61,20 +87,27 @@ const useAuthStore = create((set, get) => ({
 					error: null,
 				})
 			}
+			// Otherwise, redirect flow will be handled by listener / redirect check
 		} catch (err) {
-			// Handle popup interruptions gracefully; redirect fallback is already triggered in the service
-			if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/popup-blocked') {
-				set({ error: null, loading: false })
+			if (
+				err.code === 'auth/popup-closed-by-user' ||
+				err.code === 'auth/popup-blocked'
+			) {
+				set({ loading: false })
 				return
 			}
 			set({ error: err.message || 'Login failed', loading: false })
 		}
 	},
+
 	signInWithEmail: async (email, password) => {
 		if (get().loading) return
 		set({ loading: true, error: null })
 		try {
-			const userData = await signInWithEmail({ email: email.trim(), password })
+			const userData = await signInWithEmail({
+				email: email.trim(),
+				password,
+			})
 			set({
 				user: formatUser(userData),
 				idToken: userData.idToken,
@@ -85,11 +118,16 @@ const useAuthStore = create((set, get) => ({
 			set({ error: err.message || 'Login failed', loading: false })
 		}
 	},
+
 	signUpWithEmail: async ({ name, email, password }) => {
 		if (get().loading) return
 		set({ loading: true, error: null })
 		try {
-			const userData = await signUpWithEmail({ name: name.trim(), email: email.trim(), password })
+			const userData = await signUpWithEmail({
+				name: name.trim(),
+				email: email.trim(),
+				password,
+			})
 			set({
 				user: formatUser(userData),
 				idToken: userData.idToken,
@@ -100,6 +138,10 @@ const useAuthStore = create((set, get) => ({
 			set({ error: err.message || 'Sign-up failed', loading: false })
 		}
 	},
+
+	/* -------------------------------
+	   LOGOUT
+	-------------------------------- */
 	logout: async () => {
 		if (get().loading) return
 		set({ loading: true, error: null })
@@ -109,6 +151,10 @@ const useAuthStore = create((set, get) => ({
 			set({ user: null, idToken: null, loading: false, error: null })
 		}
 	},
+
+	/* -------------------------------
+	   PROFILE UPDATE
+	-------------------------------- */
 	updateProfileName: async (name) => {
 		if (!name || !name.trim()) {
 			set({ error: 'Name is required' })
@@ -119,16 +165,13 @@ const useAuthStore = create((set, get) => ({
 			const updated = await updateDisplayName(name.trim())
 			set((state) => ({
 				user: state.user
-					? {
-						...state.user,
-						name: updated.name,
-					}
+					? { ...state.user, name: updated.name }
 					: {
-						name: updated.name,
-						email: updated.email,
-						picture: updated.picture,
-						uid: updated.uid,
-					},
+							name: updated.name,
+							email: updated.email,
+							picture: updated.picture,
+							uid: updated.uid,
+					  },
 				loading: false,
 			}))
 		} catch (err) {
