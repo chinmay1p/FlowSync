@@ -1,20 +1,18 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
-import useUserContext from '../hooks/useUserContext'
 import LoginButton from '../components/LoginButton'
 
 const SignIn = () => {
 	const navigate = useNavigate()
 	const { signInWithEmail, loading, error, user } = useAuthStore()
-	const { loading: contextLoading } = useUserContext()
 	const [formState, setFormState] = useState({ email: '', password: '' })
 
 	useEffect(() => {
-		if (user && !contextLoading) {
+		if (user) {
 			navigate('/loading', { replace: true })
 		}
-	}, [user, contextLoading, navigate])
+	}, [user, navigate])
 
 	const handleSubmit = async (event) => {
 		event.preventDefault()

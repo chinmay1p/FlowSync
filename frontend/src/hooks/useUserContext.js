@@ -15,10 +15,10 @@ const useUserContext = () => {
 			reset()
 			return
 		}
-		if (!context && !loading) {
+		if (!context && !loading && !error) {
 			refreshContext()
 		}
-	}, [user, context, loading, refreshContext, reset])
+	}, [user, context, loading, error, refreshContext, reset])
 
 	return { context, loading, error, refreshContext }
 }
