@@ -47,7 +47,19 @@ const LandingPage = () => {
 						<a href="#stats" className="hover:text-slate-900">Stats</a>
 						<a href="#foundations" className="hover:text-slate-900">Workflow</a>
 					</nav>
-					<div className="flex items-center gap-3">
+					<div className="flex items-center gap-4">
+						<a
+							href="https://github.com/chinmay1p/FlowSync"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-slate-500 hover:text-slate-900 transition-colors"
+							aria-label="GitHub Repository"
+						>
+							<svg className="h-6 w-6 fill-current" viewBox="0 0 24 24">
+								<path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z" />
+							</svg>
+						</a>
+						<div className="h-4 w-px bg-slate-200" />
 						{user ? (
 							<>
 								<Link to="/dashboard/overview" className="rounded-full border border-purple-200 px-4 py-2 text-sm font-semibold text-purple-700 hover:border-purple-400">Dashboard</Link>
@@ -101,6 +113,17 @@ const LandingPage = () => {
 					</div>
 					<div className="flex flex-wrap items-center justify-center gap-4">
 						<Link to="/signup" className="rounded-full bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-600/40 transition hover:bg-purple-500">Get started</Link>
+						<a
+							href="https://github.com/chinmay1p/FlowSync"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-6 py-3 text-sm font-semibold text-slate-700 shadow-lg shadow-slate-900/5 transition hover:-translate-y-0.5 hover:bg-white hover:border-slate-300"
+						>
+							<svg className="h-5 w-5 fill-current text-slate-700" viewBox="0 0 24 24">
+								<path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z" />
+							</svg>
+							View on GitHub
+						</a>
 					</div>
 					<div className="relative w-full max-w-5xl rounded-[40px] border border-white/70 bg-white/80 p-10 shadow-2xl backdrop-blur">
 						<div className="grid gap-6 text-left md:grid-cols-2">
