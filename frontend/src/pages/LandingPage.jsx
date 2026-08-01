@@ -77,14 +77,19 @@ const LandingPage = () => {
 						<p className="text-sm font-semibold text-rose-800">
 							⚠️ Active app features are currently offline due to expired Firebase key limits.
 						</p>
-						<a
-							href="https://www.youtube.com/watch?v=T6X-TFZQhBo"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-rose-900 hover:text-rose-950 underline decoration-2 decoration-rose-900/40"
-						>
-							Watch the FlowSync Demo Video on YouTube
-						</a>
+						<p className="text-xs text-rose-700 mt-1">
+							Please watch the product walkthrough video below for a full demonstration of FlowSync:
+						</p>
+					</div>
+					<div className="w-full max-w-3xl mt-6 aspect-video rounded-3xl overflow-hidden border border-purple-100 bg-white p-2 shadow-2xl backdrop-blur">
+						<iframe
+							className="w-full h-full rounded-2xl"
+							src="https://www.youtube.com/embed/T6X-TFZQhBo"
+							title="FlowSync Product Demo"
+							frameBorder="0"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+							allowFullScreen
+						/>
 					</div>
 					<div className="flex flex-wrap items-center justify-center gap-4">
 						<Link to="/signup" className="rounded-full bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-600/40 transition hover:bg-purple-500">Get started</Link>
