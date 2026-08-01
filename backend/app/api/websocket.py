@@ -2,6 +2,7 @@ import base64
 import binascii
 import json
 import logging
+import os
 import time
 from typing import Any
 
@@ -68,6 +69,7 @@ async def meeting_ingestion_socket(websocket: WebSocket):
 	"""
 	token = websocket.query_params.get('token')
 	meeting_id = websocket.query_params.get('meeting_id')
+	dev_no_auth = os.getenv('DEV_NO_AUTH', 'false').lower() in {'1', 'true', 'yes'}
 
 	logger.info(
 		f'WS connection attempt from {websocket.client}: '
@@ -81,12 +83,19 @@ async def meeting_ingestion_socket(websocket: WebSocket):
 		return
 
 	# Validate and verify token BEFORE accepting
-	logger.info(f'WS token received for meeting {meeting_id}')
-	success, claims, error_reason = verify_firebase_token_ws(token)
+	if token:
+		logger.info(f'WS token received for meeting {meeting_id}')
+		success, claims, error_reason = verify_firebase_token_ws(token)
 
-	if not success:
-		logger.warning(f'WS auth failed for meeting {meeting_id}: {error_reason}')
-		await websocket.close(code=1008, reason=error_reason)
+		if not success:
+			logger.warning(f'WS auth failed for meeting {meeting_id}: {error_reason}')
+			await websocket.close(code=1008, reason=error_reason)
+			return
+	elif dev_no_auth:
+		claims = {'uid': os.getenv('DEV_USER_ID', 'local-dev-user'), 'email': 'dev@local'}
+		logger.warning('WS dev no-auth mode enabled; accepting unauthenticated meeting socket for %s', meeting_id)
+	else:
+		await websocket.close(code=1008, reason='Missing authentication token')
 		return
 
 	# Only now accept the connection after successful auth

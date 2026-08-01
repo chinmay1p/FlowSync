@@ -16,6 +16,7 @@ from app.api import (
 	org,
 	me,
 	teams,
+	dev_meetings,
 	extension as extension_routes,
 	meeting as meeting_routes,
 	meetings as meetings_routes,
@@ -39,12 +40,12 @@ async def lifespan(app: FastAPI):
 	"""FastAPI lifespan event handler for startup/shutdown."""
 	# Startup
 	initialize_firebase()
-	logger.info('✓ Firebase Admin SDK initialized')
-	print('✓ Firebase Admin SDK initialized')
+	logger.info('[OK] Firebase Admin SDK initialized')
+	print('[OK] Firebase Admin SDK initialized')
 	yield
 	# Shutdown (cleanup if needed)
-	logger.info('✓ Application shutting down')
-	print('✓ Shutting down')
+	logger.info('[OK] Application shutting down')
+	print('[OK] Shutting down')
 
 
 app = FastAPI(
@@ -85,6 +86,7 @@ app.include_router(websocket_routes.router)
 app.include_router(extension_routes.router)
 app.include_router(meeting_routes.router)
 app.include_router(meetings_routes.router)
+app.include_router(dev_meetings.router)
 app.include_router(tasks_routes.router)
 app.include_router(slack_routes.router)
 app.include_router(zoom_routes.router)

@@ -22,9 +22,9 @@ pip install -r requirements.txt
    cp .env.example .env
    ```
 
-   In `.env`, set:
+  In `.env`, set:
    ```env
-   FIREBASE_SERVICE_ACCOUNT_PATH=./service-account.json
+  FIREBASE_SERVICE_ACCOUNT_PATH=./firebase_service_account.json
    ```
 
 3. **Add Firebase Service Account:**
@@ -32,7 +32,7 @@ pip install -r requirements.txt
    - Go to [Firebase Console](https://console.firebase.google.com/)
    - Select your project → Project Settings → Service Accounts
    - Click "Generate New Private Key"
-   - Save the JSON file as `service-account.json` in the backend directory
+  - Save the JSON file as `firebase_service_account.json` in the backend directory
 
 ## Running the Server
 
@@ -138,3 +138,27 @@ Update `app/main.py` for production URLs.
 - No user data stored in database
 - All requests require valid Firebase token
 - CORS enabled for whitelisted origins only
+
+## Temporary No-Login Mode (Dev Only)
+
+For local testing without Firebase login, enable this in `.env`:
+
+```env
+DEV_NO_AUTH=true
+DEV_ORG_ID=local-dev-org
+DEV_USER_ID=local-dev-user
+```
+
+When enabled, you can use separate no-auth endpoints:
+
+- `POST /dev/meetings/start`
+- `POST /dev/meetings/{meeting_id}/transcript`
+- `POST /dev/meetings/{meeting_id}/end`
+- `GET /dev/meetings/{meeting_id}/transcript`
+- `GET /dev/meetings/{meeting_id}/summary`
+
+WebSocket ingestion also accepts no token in this mode:
+
+- `WS /ws/meeting?meeting_id=<id>`
+
+Important: Keep `DEV_NO_AUTH=false` outside local development.

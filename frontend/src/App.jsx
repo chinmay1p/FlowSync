@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import { getAuth } from 'firebase/auth'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
 
 import BotSpawner from './components/BotSpawner'
 import TaskApprovalPopup from './components/TaskApprovalPopup'
@@ -26,7 +26,7 @@ import ProfileSettings from './pages/settings/ProfileSettings'
 import TeamSettings from './pages/settings/TeamSettings'
 import useAuthStore from './store/authStore'
 
-// Lazy load Zoom components to prevent SDK bundle from hijacking the DOM
+// Lazy load Zoom components
 const ZoomTest = lazy(() => import('./pages/ZoomTest'))
 const ZoomBotClient = lazy(() => import('./pages/ZoomBotClient'))
 
@@ -34,24 +34,23 @@ function App() {
 	const setFromFirebase = useAuthStore((state) => state.setFromFirebase)
 
 	useEffect(() => {
+
 		const auth = getAuth()
-		const unsubscribe = auth.onAuthStateChanged(async (user) => {
+
+		// Don't block - just set up listener
+		const unsubscribe = onAuthStateChanged(auth, async (user) => {
+			console.log('[Auth] State changed:', user?.email || 'no user')
 			if (user) {
-				try {
-					const token = await user.getIdToken()
-					console.log('FIREBASE_ID_TOKEN:', token)
-					setFromFirebase({
-						uid: user.uid,
-						email: user.email,
-						displayName: user.displayName,
-						photoURL: user.photoURL,
-						idToken: token,
-					})
-				} catch (error) {
-					console.error('Failed to fetch Firebase ID token', error)
-				}
+				const token = await user.getIdToken()
+				setFromFirebase({
+					uid: user.uid,
+					email: user.email,
+					displayName: user.displayName,
+					photoURL: user.photoURL,
+					idToken: token,
+				})
 			} else {
-				console.log('FIREBASE_ID_TOKEN: <no user>')
+				setFromFirebase(null)
 			}
 		})
 
@@ -69,24 +68,9 @@ function App() {
 					<Route path="/get-started" element={<OrgOnboarding />} />
 					<Route path="/create-org" element={<CreateOrganization />} />
 					<Route path="/join-org" element={<JoinOrganization />} />
-					<Route
-						path="/zoom-test"
-						element={(
-							<Suspense fallback={<div>Loading...</div>}>
-								<ZoomTest />
-							</Suspense>
-						)}
-					/>
+					<Route path="/zoom-test" element={<Suspense fallback={<div>Loading...</div>}><ZoomTest /></Suspense>} />
 					<Route path="/audio-control" element={<AudioControl />} />
-					{/* Hidden bot route - opened via window.open() */}
-					<Route
-						path="/bot/zoom/:meetingId"
-						element={(
-							<Suspense fallback={<div>Loading bot...</div>}>
-								<ZoomBotClient />
-							</Suspense>
-						)}
-					/>
+					<Route path="/bot/zoom/:meetingId" element={<Suspense fallback={<div>Loading...</div>}><ZoomBotClient /></Suspense>} />
 					<Route path="/dashboard" element={<DashboardLayout />}>
 						<Route index element={<Navigate to="overview" replace />} />
 						<Route path="overview" element={<Overview />} />
@@ -104,10 +88,7 @@ function App() {
 						</Route>
 					</Route>
 				</Routes>
-
-				{/* Global task approval popup for managers */}
 				<TaskApprovalPopup />
-				{/* Auto-spawn bot windows when meetings start */}
 				<BotSpawner />
 			</BrowserRouter>
 		</TaskApprovalProvider>
