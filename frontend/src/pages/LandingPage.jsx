@@ -91,6 +91,17 @@ const LandingPage = () => {
 							allowFullScreen
 						/>
 					</div>
+					<p className="text-sm text-slate-500 mt-2">
+						If the video player doesn't load on your network,{' '}
+						<a
+							href="https://www.youtube.com/watch?v=T6X-TFZQhBo"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="font-semibold text-purple-600 hover:text-purple-800 underline"
+						>
+							click here to watch the demo directly on YouTube
+						</a>.
+					</p>
 					<div className="flex flex-wrap items-center justify-center gap-4">
 						<Link to="/signup" className="rounded-full bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-600/40 transition hover:bg-purple-500">Get started</Link>
 					</div>
