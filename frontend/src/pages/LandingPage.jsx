@@ -84,7 +84,7 @@ const LandingPage = () => {
 					<div className="w-full max-w-3xl mt-6 aspect-video rounded-3xl overflow-hidden border border-purple-100 bg-white p-2 shadow-2xl backdrop-blur">
 						<iframe
 							className="w-full h-full rounded-2xl"
-							src="https://www.youtube.com/embed/T6X-TFZQhBo"
+							src="https://www.youtube-nocookie.com/embed/T6X-TFZQhBo"
 							title="FlowSync Product Demo"
 							frameBorder="0"
 							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
